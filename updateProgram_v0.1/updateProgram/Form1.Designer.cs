@@ -36,6 +36,8 @@
             this.lb_DstDescription = new System.Windows.Forms.Label();
             this.cb_SrcIPList = new System.Windows.Forms.ComboBox();
             this.cb_DstIPList = new System.Windows.Forms.ComboBox();
+            this.lst_FileName = new System.Windows.Forms.ListView();
+            this.bt_SyncFolder = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // bt_SrcFolder
@@ -116,11 +118,32 @@
             this.cb_DstIPList.TabIndex = 4;
             this.cb_DstIPList.Text = "172.16.14.24";
             // 
+            // lst_FileName
+            // 
+            this.lst_FileName.HideSelection = false;
+            this.lst_FileName.Location = new System.Drawing.Point(12, 116);
+            this.lst_FileName.Name = "lst_FileName";
+            this.lst_FileName.Size = new System.Drawing.Size(195, 231);
+            this.lst_FileName.TabIndex = 5;
+            this.lst_FileName.UseCompatibleStateImageBehavior = false;
+            // 
+            // bt_SyncFolder
+            // 
+            this.bt_SyncFolder.Location = new System.Drawing.Point(470, 72);
+            this.bt_SyncFolder.Name = "bt_SyncFolder";
+            this.bt_SyncFolder.Size = new System.Drawing.Size(136, 23);
+            this.bt_SyncFolder.TabIndex = 6;
+            this.bt_SyncFolder.Text = "동기화 실행";
+            this.bt_SyncFolder.UseVisualStyleBackColor = true;
+            this.bt_SyncFolder.Click += new System.EventHandler(this.bt_SyncFolder_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(619, 450);
+            this.Controls.Add(this.bt_SyncFolder);
+            this.Controls.Add(this.lst_FileName);
             this.Controls.Add(this.cb_DstIPList);
             this.Controls.Add(this.cb_SrcIPList);
             this.Controls.Add(this.lb_DstDescription);
@@ -147,6 +170,8 @@
         private System.Windows.Forms.Label lb_DstDescription;
         private System.Windows.Forms.ComboBox cb_SrcIPList;
         private System.Windows.Forms.ComboBox cb_DstIPList;
+        private System.Windows.Forms.ListView lst_FileName;
+        private System.Windows.Forms.Button bt_SyncFolder;
     }
 }
 
