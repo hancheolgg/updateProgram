@@ -9,10 +9,18 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
+
+
 namespace updateProgram
 {
     public partial class Form1 : Form
     {
+        private string[] _skipFiles;
+        private string[] _deleteFiles;
+
+        private int _fileCopyCount, _folderCopyCount;
+        private int _fileDelCount, _folderDelCount;
+
         public Form1()
         {
             InitializeComponent();
@@ -83,9 +91,125 @@ namespace updateProgram
                 return;
             }
 
+            DirectoryInfo SrcInfo = new DirectoryInfo(SrcLocation);
+            DirectoryInfo DstInfo = new DirectoryInfo(DstLocation);
 
+            FileInfo[] SrcFiles = SrcInfo.GetFiles();
+            FileInfo[] DstFiles = DstInfo.GetFiles();
+
+            bool bFind = false;
+            int index = 0;
+
+            // 파일 비교
+            foreach(FileInfo SrcFile in SrcFiles)
+            {
+                string failedFile = "";
+                bFind = false;
+                index = -1;
+
+                if(isSkippedFile(SrcFile) == true)
+                {
+                    continue;
+                }
+
+                foreach(FileInfo DstFile in DstFiles)
+                {
+                    index++;
+
+                    if(DstFile == null)
+                    {
+                        continue;
+                    }
+
+                    if(SrcFile.Name.ToLower() == DstFile.Name.ToLower())
+                    {
+                        bFind = true;
+
+                        if(SrcFile.LastWriteTime != DstFile.LastWriteTime)
+                        {
+                            FileAttributes SrcAttr = SrcFile.Attributes;
+                            FileAttributes DstAttr = DstFile.Attributes;
+
+                            SrcFile.Attributes = FileAttributes.Normal;
+                            DstFile.Attributes = FileAttributes.Normal;
+
+                            SrcFile.Refresh();
+                            DstFile.Refresh();
+
+                            try
+                            {
+                                if(SrcFile.LastWriteTime > DstFile.LastWriteTime)
+                                {
+                                    failedFile = SrcFile.FullName;
+                                    File.Copy(SrcFile.FullName, DstFile.FullName, true);
+                                    _fileCopyCount++;
+                                }
+                                else
+                                {
+                                    failedFile = DstFile.FullName;
+                                    File.Copy(DstFile.FullName, SrcFile.FullName, true);
+                                    _fileCopyCount++;
+                                }
+                            }
+                            catch
+                            {
+                                lst_FileName.Items.Add("파일 복사: " + failedFile);
+                            }
+                            finally
+                            {
+                                SrcFile.Attributes = SrcAttr;
+                                SrcFile.Refresh();
+                                DstFile.Attributes = DstAttr;
+                                DstFile.Refresh();
+                            }
+                        }
+
+                        DstFiles[index] = null;
+
+                        break;
+                    }
+                }
+
+
+            }
+            
         }
 
+        #endregion
+
+        #region 파일 스킵 함수
+        private bool isSkippedFile(FileInfo aFile)
+        {
+            string filepath = aFile.Name.ToLower();
+
+            foreach (string lastWord in _skipFiles)
+            {
+                if (filepath.EndsWith(lastWord) == true)
+                {
+                    return true;
+                }
+            }
+
+            foreach (string lastWord in _deleteFiles)
+            {
+                if (filepath.EndsWith(lastWord) == true)
+                {
+                    try
+                    {
+                        aFile.Attributes = FileAttributes.Normal;
+                        aFile.Refresh();
+                        aFile.Delete();
+                    }
+                    catch
+                    {
+                        lst_FileName.Items.Add("파일 삭제: " + aFile.FullName);
+                    }
+                    return true;
+                }
+            }
+
+            return false;
+        }
         #endregion
     }
 }
